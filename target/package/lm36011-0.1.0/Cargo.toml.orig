@@ -1,0 +1,18 @@
+[package]
+name = "lm36011"
+license = "MIT"
+version = "0.1.0"
+edition = "2021"
+authors = ["Clayton Kimber <clayton.kimber.ie@gmail.com>"]
+description = "Crate for the Texas Instruments LM36011 inductorless LED controller"
+
+# Optional metadata
+documentation = "https://github.com/claytonkimber/LM36011"
+homepage = "https://github.com/claytonkimber/LM36011"
+repository = "https://github.com/claytonkimber/LM36011"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embedded-hal = "0.2"
+bitflags = "1.2"
