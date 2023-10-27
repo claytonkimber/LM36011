@@ -15,4 +15,4 @@ repository = "https://github.com/claytonkimber/LM36011"
 
 [dependencies]
 embedded-hal = "0.2"
-bitflags = "1.2"
+bitflags = "2.4"

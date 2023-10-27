@@ -52,6 +52,7 @@ impl fmt::Display for Register {
 
 // Bitflags for the Enable Register (0x01)
 bitflags! {
+    #[derive(Debug)]
     pub struct EnableRegisterFlags: u8 {
         // Reserved for future use
         const ENABLE_REGISTER_RFU           = 0b1110_0000;
@@ -69,6 +70,7 @@ bitflags! {
 
 // Bitflags for the Configuration Register (0x02)
 bitflags! {
+    #[derive(Debug)]
     pub struct ConfigurationRegisterFlags: u8 {
         /// IVFM Levels (IVFM-D) [Bit 7-5]
         const IVFM_2_9V         = 0b0000_0000;
@@ -106,6 +108,7 @@ bitflags! {
 
 // Bitflags for the LED Flash Brightness Register (0x03)
 bitflags! {
+    #[derive(Debug)]
     pub struct LedFlashBrightnessFlags: u8 {
         /// LED Flash Brightness Level [Bit 6:0]
         const FLASH_11MA    = 0x00;
@@ -122,6 +125,7 @@ bitflags! {
 
 // Bitflags for the LED Torch Brightness Register (0x04)
 bitflags! {
+    #[derive(Debug)]
     pub struct LedTorchBrightnessFlags: u8 {
         // Reserved for future use
         const TORCH_BRIGHTNESS_RFU  = 0b1000_0000;
@@ -137,6 +141,7 @@ bitflags! {
 
 // Bitflags for the Flags Register (0x05)
 bitflags! {
+    #[derive(Debug)]
     pub struct FlagRegisterFlags: u8 {
         // Reserved for future use
         const FLAGS_REGISTER_RFU            = 0b1000_0000;
@@ -152,7 +157,8 @@ bitflags! {
 
 // Bitflags for the Device ID Register (0x06)
 bitflags! {
-    /// Represents the Device ID and RESET Register of the LM36011.
+    // Represents the Device ID and RESET Register of the LM36011.
+    #[derive(Debug,PartialEq,Clone,Copy)]
     pub struct DeviceIdFlags: u8 {
         // Software RESET
         // 0 = Normal (default)
@@ -245,8 +251,8 @@ where
     /// ```
     /// // Some initialization to get the device instance
     /// //(I2C needs to be initialized first)
-    /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
-    /// match driver.set_flash_current(0x55) {
+    /// let mut driver = lm36011::LM36011::new(i2c); // Some initialization to get the device instance
+    /// match driver.set_flash_current(285.0) {
     ///     Ok(_) => println!("Flash current set successfully"),
     ///     Err(e) => eprintln!("Error setting flash current: {:?}", e),
     /// }
@@ -282,7 +288,7 @@ where
     /// ```
     /// // Some initialization to get the device instance
     /// //(I2C needs to be initialized first)
-    /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
+    /// let mut driver = lm36011::LM36011::new(i2c); // Some initialization to get the device instance
     /// match driver.set_flash_current(150.0) {
     ///     Ok(_) => println!("Flash current set successfully"),
     ///     Err(e) => eprintln!("Error setting flash current: {:?}", e),
@@ -329,7 +335,7 @@ where
     /// ```
     /// // Some initialization to get the device instance
     /// //(I2C needs to be initialized first)
-    /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
+    /// let mut driver = lm36011::LM36011::new(i2c); // Some initialization to get the device instance
     /// match driver.get_device_id() {
     ///     Ok(id) => println!("LM36011 device ID: {}", id),
     ///     Err(e) => eprintln!("Error reading device ID: {:?}", e),
