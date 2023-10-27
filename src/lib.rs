@@ -1,8 +1,8 @@
 #![no_std]
 
-use embedded_hal::blocking::i2c;
 use bitflags::bitflags;
 use core::fmt;
+use embedded_hal::blocking::i2c;
 
 /// Library for the Texas instruments LM36011 inductorless LED driver
 ///
@@ -206,19 +206,19 @@ impl<I2C> fmt::Display for LM36011<I2C> {
 }
 
 impl<I2C, E> LM36011<I2C>
-    where
-        I2C: i2c::Write<Error=E> + i2c::WriteRead<Error=E>,
+where
+    I2C: i2c::Write<Error = E> + i2c::WriteRead<Error = E>,
 {
     /// Creates a new instance of the LM36011 with the provided I2C interface.
     pub fn new(i2c: I2C) -> Self {
         Self {
             i2c,
             enable_flags: EnableRegisterFlags::IVFM_ENABLE,
-            config_flags: ConfigurationRegisterFlags::IVFM_2_9V |
-                ConfigurationRegisterFlags::TIMEOUT_600MS |
-                ConfigurationRegisterFlags::TORCH_RAMP_1MS,
-            flash_brightness_flags: LedFlashBrightnessFlags::FLASH_11MA |
-                LedFlashBrightnessFlags::THERMAL_SCALEBACK_ENABLED,
+            config_flags: ConfigurationRegisterFlags::IVFM_2_9V
+                | ConfigurationRegisterFlags::TIMEOUT_600MS
+                | ConfigurationRegisterFlags::TORCH_RAMP_1MS,
+            flash_brightness_flags: LedFlashBrightnessFlags::FLASH_11MA
+                | LedFlashBrightnessFlags::THERMAL_SCALEBACK_ENABLED,
             torch_brightness_flags: LedTorchBrightnessFlags::TORCH_2_4MA,
             flag_register_flags: FlagRegisterFlags::empty(),
             device_id: DeviceIdFlags::empty(),
@@ -244,7 +244,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// ```
     /// // Some initialization to get the device instance
-    /// //(I2C needs to be inititilized first)
+    /// //(I2C needs to be initialized first)
     /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
     /// match driver.set_flash_current(0x55) {
     ///     Ok(_) => println!("Flash current set successfully"),
@@ -269,7 +269,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// * `current` - The desired flash current value to be set. The input current in mA will be
     /// divided by 11.7 and converted to a u8 byte.  Note: since the resolution of the driver is
-    /// 11.7mA, setting fractions of the current is likly overkill, but could be more accurate in a
+    /// 11.7mA, setting fractions of the current is likely overkill, but could be more accurate in a
     /// very small subset of results.
     ///
     /// # Returns
@@ -281,7 +281,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// ```
     /// // Some initialization to get the device instance
-    /// //(I2C needs to be inititilized first)
+    /// //(I2C needs to be initialized first)
     /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
     /// match driver.set_flash_current(150.0) {
     ///     Ok(_) => println!("Flash current set successfully"),
@@ -296,14 +296,13 @@ impl<I2C, E> LM36011<I2C>
         let brightness_flags: u8 = (current / 11.7) as u8;
 
         // convert the u8 value to a LedFlashBrightnessFlags
-        let mut brightness_bitflags =
-            LedFlashBrightnessFlags::from_bits_truncate(brightness_flags);
+        let mut brightness_bitflags = LedFlashBrightnessFlags::from_bits_truncate(brightness_flags);
 
         // Ensure the thermal current scale-back bit remains set/not set
         brightness_bitflags.set(
             LedFlashBrightnessFlags::THERMAL_SCALEBACK_ENABLED,
-            self.flash_brightness_flags.contains(
-                LedFlashBrightnessFlags::THERMAL_SCALEBACK_ENABLED),
+            self.flash_brightness_flags
+                .contains(LedFlashBrightnessFlags::THERMAL_SCALEBACK_ENABLED),
         );
 
         // Use the set_register function to set the flash current
@@ -329,7 +328,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// ```
     /// // Some initialization to get the device instance
-    /// //(I2C needs to be inititilized first)
+    /// //(I2C needs to be initialized first)
     /// let mut driver = lm36011::LM36011::new(i2c);; // Some initialization to get the device instance
     /// match driver.get_device_id() {
     ///     Ok(id) => println!("LM36011 device ID: {}", id),
@@ -338,8 +337,11 @@ impl<I2C, E> LM36011<I2C>
     /// ```
     pub fn get_device_id(&mut self) -> Result<u8, E> {
         let mut buffer = [0u8; 1];
-        self.i2c.write_read(LM36011_I2C_ADDRESS, &[Register::DeviceIdRegister as u8],
-                            &mut buffer)?;
+        self.i2c.write_read(
+            LM36011_I2C_ADDRESS,
+            &[Register::DeviceIdRegister as u8],
+            &mut buffer,
+        )?;
         Ok(buffer[0])
     }
 
@@ -361,7 +363,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// ```
     /// // Some initialization to get the device instance
-    /// //(I2C needs to be inititilized first)
+    /// //(I2C needs to be initialized first)
     /// let mut driver = lm36011::LM36011::new(i2c);
     /// match driver.get_register(Register::DeviceIdRegister) {
     ///     Ok(value) => println!("Register value: {}", value),
@@ -370,7 +372,8 @@ impl<I2C, E> LM36011<I2C>
     /// ```
     pub fn get_register(&mut self, reg: Register) -> Result<u8, E> {
         let mut buffer = [0u8; 1];
-        self.i2c.write_read(LM36011_I2C_ADDRESS, &[reg as u8], &mut buffer)?;
+        self.i2c
+            .write_read(LM36011_I2C_ADDRESS, &[reg as u8], &mut buffer)?;
         Ok(buffer[0])
     }
 
@@ -393,7 +396,7 @@ impl<I2C, E> LM36011<I2C>
     ///
     /// ```
     /// // Some initialization to get the device instance
-    /// //(I2C needs to be inititilized first)
+    /// //(I2C needs to be initialized first)
     /// let mut driver = lm36011::LM36011::new(i2c);
     /// let result = driver.set_register(Register::DeviceIdRegister, 0x01);
     /// if result.is_err() {
@@ -402,8 +405,9 @@ impl<I2C, E> LM36011<I2C>
     /// ```
     pub fn set_register(&mut self, reg: Register, data: u8) -> Result<(), LM36011Error<E>> {
         let buffer: [u8; 2] = [reg as u8, data];
-        self.i2c.write(LM36011_I2C_ADDRESS, &buffer).
-            map_err(LM36011Error::I2CError)
+        self.i2c
+            .write(LM36011_I2C_ADDRESS, &buffer)
+            .map_err(LM36011Error::I2CError)
     }
 
     /// Reads all the registers of the LM36011 and saves the register states to the respective bitflag structs.
@@ -429,9 +433,13 @@ impl<I2C, E> LM36011<I2C>
     pub fn read_status(&mut self) -> Result<(), LM36011Error<E>> {
         // Read all 6 LM36011 registers
         let mut buffer = [0u8; 6];
-        self.i2c.write_read(LM36011_I2C_ADDRESS,
-                            &[Register::EnableRegister as u8], &mut buffer).
-            map_err(LM36011Error::I2CError)?;
+        self.i2c
+            .write_read(
+                LM36011_I2C_ADDRESS,
+                &[Register::EnableRegister as u8],
+                &mut buffer,
+            )
+            .map_err(LM36011Error::I2CError)?;
 
         // Save registers to the struct
         self.enable_flags = EnableRegisterFlags::from_bits_truncate(buffer[0]);
@@ -467,7 +475,8 @@ impl<I2C, E> LM36011<I2C>
     ///
     pub fn write_status(&mut self) -> Result<(), LM36011Error<E>> {
         // create a buffer with all of the settings
-        let buffer = [0x01,
+        let buffer = [
+            0x01,
             self.enable_flags.bits(),
             self.config_flags.bits(),
             self.flash_brightness_flags.bits(),
@@ -476,7 +485,8 @@ impl<I2C, E> LM36011<I2C>
             //self.device_id.bits(),
         ];
 
-        self.i2c.write(LM36011_I2C_ADDRESS, &buffer)
+        self.i2c
+            .write(LM36011_I2C_ADDRESS, &buffer)
             .map_err(LM36011Error::I2CError)
     }
 
@@ -501,8 +511,9 @@ impl<I2C, E> LM36011<I2C>
     /// Returns an `Err` variant of `LM36011Error` if there's an I2C communication error.
 
     pub fn software_reset(&mut self) -> Result<(), LM36011Error<E>> {
-        let buffer = [0x06,0b1000_0000];
-        self.i2c.write(LM36011_I2C_ADDRESS, &buffer)
+        let buffer = [0x06, 0b1000_0000];
+        self.i2c
+            .write(LM36011_I2C_ADDRESS, &buffer)
             .map_err(LM36011Error::I2CError)
     }
 
@@ -535,12 +546,13 @@ impl<I2C, E> LM36011<I2C>
         }
 
         // Check if the read value matches the expected device ID
-        if self.device_id & DeviceIdFlags::SILICON_REVISION_MASK ==
-            DeviceIdFlags::from_bits_truncate(0x01) {
+        if self.device_id & DeviceIdFlags::SILICON_REVISION_MASK
+            == DeviceIdFlags::from_bits_truncate(0x01)
+        {
             Ok(true)
         } else {
             Err(LM36011Error::DeviceIDError)
         }
     }
-// similarly, you can add other methods with detailed documentation.
+    // similarly, you can add other methods with detailed documentation.
 }
